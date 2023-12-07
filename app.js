@@ -7,10 +7,10 @@ const apiCovidUrl = "https://disease.sh/v3/covid-19/historical/";
 // Define a function to create Highcharts chart
 const createChart = (dataArray) => {
     if (dataArray && dataArray.length > 0) {
-        const data = dataArray[0]; // Assuming you want data from the first item in the array
+        const data = dataArray[0]; // Just using data from the first item in the array as test
         Highcharts.chart(mainElement, {
             title: {
-                text: 'COVID-19 Historical Data for '
+                text: 'COVID-19 Historical Data for the first country in the array which is Afghanistan'
             },
             xAxis: {
                 categories: Object.keys(data.timeline.cases),
@@ -25,10 +25,11 @@ const createChart = (dataArray) => {
                     name: 'Cases',
                     data: Object.values(data.timeline.cases),
                 },
-                // You can add more series for other data points (deaths, recovered, etc.)
+                // Add more series for other data points (deaths, recovered, etc.)
             ]
         });
     } else {
+        // Printing error messenger
         console.error("No data available to create chart.");
     }
 }
