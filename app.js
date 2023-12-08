@@ -1,6 +1,5 @@
 // Declare the DOM elements
 const countriesElement = document.getElementById("dropdown-countries")
-const provincesElement = document.getElementById("dropdown-provinces")
 const mainElement = document.getElementById("covid-cases");
 
 
@@ -69,12 +68,13 @@ const getCountryData = async () => {
         countriesElement.appendChild(countryElement);
     }
 
-    // Implementing the "change" event listener for the dropdown
-    // Displaying the Covid19 data of the country the user has selected in the dropdown menu
-    const handleCountryChange = async e => {
-        const selectedCountryName = e.target.value;
-        const selectedCountry = countries.find(country => country.country === selectedCountryName);
-    
+    // Set the default country
+    const defaultCountry = "Afghanistan";
+
+    // Initialize the chart with the default country on page load
+    const initializeChart = async (countryName) => {
+        const selectedCountry = countries.find(country => country.country === countryName);
+
         if (selectedCountry) {
             try {
                 const countryData = await getCovidApi(`${apiCovidUrl}${selectedCountry.country}`);
@@ -91,14 +91,23 @@ const getCountryData = async () => {
             console.error("Selected country not found in the list.");
         }
     };
-    
-    
+
+    // Call initializeChart with the default country
+    initializeChart(defaultCountry);
+
+    // Implementing the "change" event listener for the dropdown
+    // Displaying the Covid19 data of the country the user has selected in the dropdown menu
+    const handleCountryChange = async e => {
+        const selectedCountryName = e.target.value;
+        initializeChart(selectedCountryName);
+    };
 
     countriesElement.addEventListener('change', handleCountryChange);
-}
+};
 
 // Call getCountryData to initialize the dropdown and event listener
 getCountryData();
+
 
 
 
