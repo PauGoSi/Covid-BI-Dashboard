@@ -1,39 +1,11 @@
 // Declare the DOM elements
-const mainElement = document.querySelector('main');
+const countriesElement = document.getElementById("dropdown-countries")
+const provincesElement = document.getElementById("dropdown-provinces")
+const mainElement = document.getElementById("covid-cases");
+
 
 // Declare the API URL
 const apiCovidUrl = "https://disease.sh/v3/covid-19/historical/";
-
-// Define a function to create Highcharts chart
-const createChart = (dataArray) => {
-    if (dataArray && dataArray.length > 0) {
-        const data = dataArray[0]; // Just using data from the first item in the array as test
-        Highcharts.chart(mainElement, {
-            title: {
-                text: 'COVID-19 Historical Data for the first country in the array which is Afghanistan'
-            },
-            xAxis: {
-                categories: Object.keys(data.timeline.cases),
-            },
-            yAxis: {
-                title: {
-                    text: 'Cases'
-                }
-            },
-            series: [
-                {
-                    name: 'Cases',
-                    data: Object.values(data.timeline.cases),
-                },
-                // Add more series for other data points (deaths, recovered, etc.)
-            ]
-        });
-    } else {
-        // Printing error messenger
-        console.error("No data available to create chart.");
-    }
-}
-
 
 // Define a function for fetching the data from the API and returning it as a promise
 const getCovidApi = async (baseCovidApiUrl) => {
@@ -50,16 +22,91 @@ const getCovidApi = async (baseCovidApiUrl) => {
     }
 }
 
-// Wait for the document to be ready before executing the Highcharts code
-document.addEventListener('DOMContentLoaded', () => {
-    // Call the API and create the chart
-    getCovidApi(apiCovidUrl)
-        .then(data => {
-            console.log(data);
-            createChart(data);
-        })
-        .catch(error => console.error(error));
-});
+// Define a function to create Highcharts chart
+const createChart = async (data) => {
+    try {
+        if (data && data.timeline && data.timeline.cases) {
+            Highcharts.chart(mainElement, {
+                title: {
+                    text: `COVID-19 Historical Data for ${data.country}`
+                },
+                xAxis: {
+                    categories: Object.keys(data.timeline.cases),
+                },
+                yAxis: {
+                    title: {
+                        text: 'Cases'
+                    }
+                },
+                series: [
+                    {
+                        name: 'Cases',
+                        data: Object.values(data.timeline.cases),
+                    },
+                    // Add more series for other data points (deaths, recovered, etc.)
+                ]
+            });
+        } else {
+            console.error("No valid data available to create chart.");
+        }
+    } catch (error) {
+        console.error("Error creating chart:", error);
+    }
+};
 
-// Log the main element to the console
-console.log(mainElement);
+const getCountryData = async () => {
+    // Calling the fetchApi function
+    const countries = await getCovidApi(apiCovidUrl);
+
+    // Log the fetched countries to the console
+    console.log("Fetched countries:", countries);
+
+    // Looping through the array and creating an option for each country
+    for (const country of countries) {
+        const countryElement = document.createElement("option");
+        countryElement.value = country.country; // Use country name as the value
+        countryElement.appendChild(document.createTextNode(country.country + " " + country.province));
+        countriesElement.appendChild(countryElement);
+    }
+
+    // Implementing the "change" event listener for the dropdown
+    // Displaying the Covid19 data of the country the user has selected in the dropdown menu
+    const handleCountryChange = async e => {
+        const selectedCountryName = e.target.value;
+        const selectedCountry = countries.find(country => country.country === selectedCountryName);
+    
+        if (selectedCountry) {
+            try {
+                const countryData = await getCovidApi(`${apiCovidUrl}${selectedCountry.country}`);
+                
+                if (countryData && countryData.timeline) {
+                    createChart(countryData);
+                } else {
+                    console.error("No valid data available for the selected country.");
+                }
+            } catch (error) {
+                console.error("Error fetching data for the selected country:", error);
+            }
+        } else {
+            console.error("Selected country not found in the list.");
+        }
+    };
+    
+    
+
+    countriesElement.addEventListener('change', handleCountryChange);
+}
+
+// Call getCountryData to initialize the dropdown and event listener
+getCountryData();
+
+
+
+
+
+
+
+
+
+
+
