@@ -22,5 +22,5 @@ If you'd like to contribute, please fork the repository and create a pull reques
 
 ## Author:
 
-Fullname: Pau Go Si 
-E-mail: paugosi@hotmail.com
+- Fullname: Pau Go Si 
+- E-mail: paugosi@hotmail.com
