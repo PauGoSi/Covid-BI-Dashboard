@@ -1,6 +1,6 @@
-# Project Title
+# Covid BI Dashboard
 
-Description of your project goes here.
+Try playing around with this dashboard. It provides users with the option to view historical statistics on COVID-19 for different countries.
 
 ## Features
 
