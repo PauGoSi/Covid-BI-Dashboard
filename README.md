@@ -20,6 +20,7 @@ Steps to install and run your project.
 
 If you'd like to contribute, please fork the repository and create a pull request.
 
-## License
+## Author:
 
-This project is licensed under the [License Name] - see the [LICENSE.md](LICENSE.md) file for details.
+Fullname: Pau Go Si 
+E-mail: paugosi@hotmail.com
