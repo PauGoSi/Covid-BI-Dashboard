@@ -68,7 +68,10 @@ const initializeChart = async (countryName, selectedProvince = null) => {
 
     if (selectedCountry) {
         try {
-            // Fix the URL by removing the extra "historical"
+            // For example `https://disease.sh/v3/covid-19/historical/Australia/new south wales` where 
+            // apiCovidUrl = `https://disease.sh/v3/covid-19/historical/` and 
+            // selectedCountry.country = `Australia` and 
+            // queryParameters = `/new south wales`
             let queryParameters = selectedProvince ? `/${selectedProvince}` : "";
             const countryData = await getCovidApi(`${apiCovidUrl}${selectedCountry.country}`, queryParameters);
 
@@ -111,6 +114,21 @@ const getProvinceData = async (selectedCountry, selectedProvince = null) => {
         console.error("No valid data available for the selected country.");
     }
 };
+// Function to remove duplicate countries from the dropdown
+const removeDuplicateCountries = () => {
+    const uniqueCountries = Array.from(new Set(countries.map(country => country.country)));
+  
+    // Clear the existing options in the select element
+    countriesElement.innerHTML = '';
+  
+    // Add the unique countries back to the select element
+    for (const country of uniqueCountries) {
+      const countryElement = document.createElement('option');
+      countryElement.value = country;
+      countryElement.appendChild(document.createTextNode(country));
+      countriesElement.appendChild(countryElement);
+    }
+  };
 // Implementing the "change" event listener for the country dropdown
 // Displaying the Covid19 data of the country the user has selected in the dropdown menu
 const handleCountryChange = async e => {
@@ -122,8 +140,7 @@ const handleCountryChange = async e => {
     const selectedProvince = provincesElement.value;
     initializeChart(selectedCountryName, selectedProvince);
 };
-// Implementing the "change" event listener for the country dropdown
-// Displaying the Covid19 data of the country the user has selected in the dropdown menu
+
 countriesElement.addEventListener('change', handleCountryChange);
 
 // Implementing the "change" event listener for the province dropdown
@@ -134,21 +151,16 @@ const handleProvinceChange = async () => {
     initializeChart(selectedCountryName, selectedProvince);
 };
 
-// Implementing the "change" event listener for the province dropdown
-// Update the chart based on the selected province within the country
 provincesElement.addEventListener('change', handleProvinceChange);
 
 // Call getCountryData to initialize the dropdown and event listener
 countries = await getCovidApi(apiCovidUrl);
 console.log("Fetched countries:", countries);
 
-// Looping through the array and creating an option for each country
-for (const country of countries) {
-    const countryElement = document.createElement("option");
-    countryElement.value = country.country; // Use country name as the value
-    countryElement.appendChild(document.createTextNode(country.country));
-    countriesElement.appendChild(countryElement);
-}
+// Remove duplicate countries from the dropdown
+removeDuplicateCountries();
+
+console.log("Print countriesElement: ",countriesElement);
 
 // Set the default country
 const defaultCountry = "Afghanistan";
