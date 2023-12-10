@@ -1,6 +1,6 @@
 # Covid BI Dashboard
 
-Try playing around with this dashboard. It provides users with the option to view historical statistics on COVID-19 for different countries.
+Try playing around with this dashboard. It provides users with the option to view historical statistics on COVID for different countries.
 
 ## Features
 
