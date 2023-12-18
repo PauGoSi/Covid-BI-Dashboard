@@ -16,6 +16,10 @@ How to use your project.
 
 To run this project on your local machine, simply install Microsoft Visual Studio and ensure that you have the "Live Server" extension installed.
 
+## Run the project
+
+If you want to run this project, right-click on the index.html file and select "Open with Live Server".
+
 ## Contributing
 
 If you'd like to contribute, please fork the repository and create a pull request.
