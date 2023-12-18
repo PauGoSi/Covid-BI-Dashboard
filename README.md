@@ -1,6 +1,6 @@
-# Project Title
+# Covid BI Dashboard
 
-Description of your project goes here.
+Try playing around with this dashboard. It provides users with the option to view historical statistics on COVID for different countries.
 
 ## Features
 
@@ -20,6 +20,7 @@ Steps to install and run your project.
 
 If you'd like to contribute, please fork the repository and create a pull request.
 
-## License
+## Author:
 
-This project is licensed under the [License Name] - see the [LICENSE.md](LICENSE.md) file for details.
+- Fullname: Pau Go Si 
+- E-mail: paugosi@hotmail.com
