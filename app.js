@@ -29,7 +29,7 @@ const getCovidApi = async (baseCovidApiUrl, queryParameters = "") => {
 };
 
 // Define a function to create Highcharts chart
-const createChart = (data, selectedProvince = null, curveType = null,covidElement) => {
+const createChart = (data, selectedProvince = null, curveType = null,covidElement,serieColor) => {
     try {
         let titleText = `COVID-19 Historical Data for ${data.country}`;
 
@@ -40,6 +40,17 @@ const createChart = (data, selectedProvince = null, curveType = null,covidElemen
         let textCurveType = `${curveType}`
 
         Highcharts.chart(covidElement, {
+            tooltip: {
+                backgroundColor: '#FCFFC5',
+                borderColor: 'black',
+                borderRadius: 5,
+                borderWidth: 10
+            },
+            plotOptions: {
+                series: {
+                    color: serieColor
+                }
+            },
             title: {
                 text: titleText,
             },
@@ -64,7 +75,7 @@ const createChart = (data, selectedProvince = null, curveType = null,covidElemen
 };
 
 // Define a function to initialize the chart with default country on page load
-const initializeChart = async (countryName, selectedProvince = null, curveType, covidElement) => {
+const initializeChart = async (countryName, selectedProvince = null, curveType, covidElement, serieColor) => {
     if (!countries) {
         console.error("Countries data is not available.");
         return;
@@ -82,7 +93,7 @@ const initializeChart = async (countryName, selectedProvince = null, curveType, 
             const countryData = await getCovidApi(`${apiCovidUrl}${selectedCountry.country}`, queryParameters);
 
             if (countryData && countryData.timeline) {
-                createChart(countryData, selectedProvince, curveType, covidElement);
+                createChart(countryData, selectedProvince, curveType, covidElement,serieColor);
             } else {
                 console.error("No valid data available for the selected country.");
             }
@@ -151,9 +162,9 @@ countriesElement.addEventListener('change', handleCountryChange);
 const handleProvinceChange = async () => {
     const selectedCountryName = countriesElement.value;
     const selectedProvince = provincesElement.value;
-    initializeChart(selectedCountryName, selectedProvince, 'cases', covidCasesElement);
-    initializeChart(selectedCountryName, selectedProvince, 'deaths', covidDeathsElement);
-    initializeChart(selectedCountryName, selectedProvince, 'recovered', covidRecoveredElement);
+    initializeChart(selectedCountryName, selectedProvince, 'cases', covidCasesElement, '#0000FF');
+    initializeChart(selectedCountryName, selectedProvince, 'deaths', covidDeathsElement ,'#FF0000');
+    initializeChart(selectedCountryName, selectedProvince, 'recovered', covidRecoveredElement, '#008000');
 };
 
 provincesElement.addEventListener('change', handleProvinceChange);
@@ -171,6 +182,6 @@ console.log("Print countriesElement: ",countriesElement);
 const defaultCountry = "Afghanistan";
 
 // Initialize the chart with the default country on page load
-initializeChart(defaultCountry, null, 'cases', covidCasesElement);
-initializeChart(defaultCountry, null, 'deaths', covidDeathsElement);
-initializeChart(defaultCountry, null, 'recovered', covidRecoveredElement);
+initializeChart(defaultCountry, null, 'cases', covidCasesElement,'#0000FF');
+initializeChart(defaultCountry, null, 'deaths', covidDeathsElement, '#FF0000');
+initializeChart(defaultCountry, null, 'recovered', covidRecoveredElement, '#008000');
