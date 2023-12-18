@@ -1,6 +1,6 @@
 # Covid BI Dashboard
 
-Try playing around with this dashboard. It provides users with the option to view historical statistics about the number of COVID-cases, -deaths and -recovered for different countries and different provinces in that specific country.
+Feel free to explore and interact with this BI Covid dashboard. It provides users with the option to view historical statistics on the number of COVID cases, deaths, and recoveries for various countries and provinces within those countries.
 
 ## Features
 
