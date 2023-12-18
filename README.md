@@ -4,9 +4,9 @@ Try playing around with this dashboard. It provides users with the option to vie
 
 ## Features
 
-- A dropdown menu where the user can select a country
-- A dropdown menu where the user can select provinces depending on which country the user has selected
-- The Highchart graphs will change dynamically depending on what the user has selected as country and province.
+- A dropdown menu where the user can select a country.
+- A dropdown menu where the user can select provinces based on the country the user has selected.
+- The Highchart graphs will change dynamically depending on the user's selection of country and province.
 
 ## Usage
 
@@ -14,7 +14,7 @@ How to use your project.
 
 ## Installation
 
-To be able to run this project on your local machine, you only need to install Microsoft Visual Studio
+To run this project on your local machine, you only need to install Microsoft Visual Studio.
 
 ## Contributing
 
