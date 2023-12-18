@@ -136,9 +136,6 @@ const handleCountryChange = async e => {
 
     // Call the function to populate the province dropdown based on the selected country
     await getProvinceData(selectedCountryName);
-
-    const selectedProvince = provincesElement.value;
-    initializeChart(selectedCountryName, selectedProvince);
 };
 
 countriesElement.addEventListener('change', handleCountryChange);
