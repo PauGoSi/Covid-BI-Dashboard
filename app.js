@@ -1,7 +1,11 @@
-// Declare the DOM elements
+// Declare the DOM elements for the dropdown menues
 const countriesElement = document.getElementById("dropdown-countries");
 const provincesElement = document.getElementById("dropdown-provinces");
-const covidcasesElement = document.getElementById("covid-cases");
+
+// Declare the DOM elements for the Highchart curve graphs
+const covidCasesElement = document.getElementById("covid-cases");
+const covidDeathsElement = document.getElementById("covid-deaths");
+const covidRecoveredElement = document.getElementById("covid-recovered");
 
 // Declare the API URL
 const apiCovidUrl = "https://disease.sh/v3/covid-19/historical/";
@@ -25,7 +29,7 @@ const getCovidApi = async (baseCovidApiUrl, queryParameters = "") => {
 };
 
 // Define a function to create Highcharts chart
-const createChart = (data, selectedProvince = null) => {
+const createChart = (data, selectedProvince = null, curveType = null,covidElement) => {
     try {
         let titleText = `COVID-19 Historical Data for ${data.country}`;
 
@@ -33,22 +37,24 @@ const createChart = (data, selectedProvince = null) => {
             titleText += ` - ${selectedProvince}`;
         }
 
-        Highcharts.chart(covidcasesElement, {
+        let textCurveType = `${curveType}`
+
+        Highcharts.chart(covidElement, {
             title: {
                 text: titleText,
             },
             xAxis: {
-                categories: Object.keys(data.timeline.cases),
+                categories: Object.keys(data.timeline[curveType]),
             },
             yAxis: {
                 title: {
-                    text: 'Cases',
+                    text: textCurveType
                 },
             },
             series: [
                 {
-                    name: 'Cases',
-                    data: Object.values(data.timeline.cases),
+                    name: textCurveType,
+                    data: Object.values(data.timeline[curveType]),
                 },
             ],
         });
@@ -58,7 +64,7 @@ const createChart = (data, selectedProvince = null) => {
 };
 
 // Define a function to initialize the chart with default country on page load
-const initializeChart = async (countryName, selectedProvince = null) => {
+const initializeChart = async (countryName, selectedProvince = null, curveType, covidElement) => {
     if (!countries) {
         console.error("Countries data is not available.");
         return;
@@ -76,7 +82,7 @@ const initializeChart = async (countryName, selectedProvince = null) => {
             const countryData = await getCovidApi(`${apiCovidUrl}${selectedCountry.country}`, queryParameters);
 
             if (countryData && countryData.timeline) {
-                createChart(countryData, selectedProvince);
+                createChart(countryData, selectedProvince, curveType, covidElement);
             } else {
                 console.error("No valid data available for the selected country.");
             }
@@ -145,7 +151,9 @@ countriesElement.addEventListener('change', handleCountryChange);
 const handleProvinceChange = async () => {
     const selectedCountryName = countriesElement.value;
     const selectedProvince = provincesElement.value;
-    initializeChart(selectedCountryName, selectedProvince);
+    initializeChart(selectedCountryName, selectedProvince, 'cases', covidCasesElement);
+    initializeChart(selectedCountryName, selectedProvince, 'deaths', covidDeathsElement);
+    initializeChart(selectedCountryName, selectedProvince, 'recovered', covidRecoveredElement);
 };
 
 provincesElement.addEventListener('change', handleProvinceChange);
@@ -163,4 +171,6 @@ console.log("Print countriesElement: ",countriesElement);
 const defaultCountry = "Afghanistan";
 
 // Initialize the chart with the default country on page load
-initializeChart(defaultCountry);
+initializeChart(defaultCountry, null, 'cases', covidCasesElement);
+initializeChart(defaultCountry, null, 'deaths', covidDeathsElement);
+initializeChart(defaultCountry, null, 'recovered', covidRecoveredElement);
