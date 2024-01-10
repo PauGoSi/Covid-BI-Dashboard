@@ -14,7 +14,7 @@ How to use your project.
 
 ## Installation
 
-To run this project on your local machine, simply install Microsoft Visual Studio and ensure that you have the "Live Server" extension installed.
+To run this project on your local machine, simply install Microsoft Visual Studio Code and ensure that you have the "Live Server" extension installed.
 
 ## Run the project
 
