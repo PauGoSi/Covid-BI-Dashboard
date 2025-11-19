@@ -1,6 +1,8 @@
 # Covid BI Dashboard
 
-Feel free to explore and interact with this BI Covid dashboard. It provides users with the option to view historical statistics on the number of COVID cases, deaths, and recoveries for various countries and provinces within those countries.
+Feel free to explore and interact with this COVID-19 Business Intelligence dashboard. It allows users to view historical data on confirmed cases, deaths, and recoveries across multiple countries and their respective provinces. 
+
+This project utilizes the free public API provided by [https://disease.sh/](https://disease.sh/v3/covid-19/historical/), and the dashboard is developed using vanilla JavaScript.
 
 ## Features
 
@@ -8,17 +10,13 @@ Feel free to explore and interact with this BI Covid dashboard. It provides user
 - A dropdown menu where the user can select provinces based on the country the user has selected.
 - The Highchart graphs will change dynamically depending on the user's selection of country and province.
 
-## Usage
-
-How to use your project.
-
 ## Installation
 
-To run this project on your local machine, simply install Microsoft Visual Studio Code and ensure that you have the "Live Server" extension installed.
+To run this project on your local machine, simply install Visual Studio Code and ensure that you have the "Live Server" extension installed.
 
 ## Run the project
 
-If you want to run this project, right-click on the index.html file and select "Open with Live Server".
+If you want to run this project on your local machine, right-click on the index.html file and select "Open with Live Server".
 
 ## Contributing
 
