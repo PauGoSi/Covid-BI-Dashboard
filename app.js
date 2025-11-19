@@ -1,19 +1,17 @@
-// Declare the DOM elements for the dropdown menues
+// DOM elements for dropdown menus
 const countriesElement = document.getElementById("dropdown-countries");
 const provincesElement = document.getElementById("dropdown-provinces");
 
-// Declare the DOM elements for the Highchart curve graphs
-const covidCasesElement = document.getElementById("covid-cases");
-const covidDeathsElement = document.getElementById("covid-deaths");
-const covidRecoveredElement = document.getElementById("covid-recovered");
+// DOM element for the Highcharts combined graph
+const covidChartElement = document.getElementById("covid-chart");
 
-// Declare the API URL
+// API URL
 const apiCovidUrl = "https://disease.sh/v3/covid-19/historical/";
 
-// Define a global variable for storing fetched countries
+// Global variable for storing fetched countries
 let countries;
 
-// Define a function for fetching the data from the API and returning it as a promise
+// Generic fetch helper
 const getCovidApi = async (baseCovidApiUrl, queryParameters = "") => {
     try {
         const response = await fetch(`${baseCovidApiUrl}${queryParameters}`);
@@ -24,164 +22,256 @@ const getCovidApi = async (baseCovidApiUrl, queryParameters = "") => {
         return data;
     } catch (error) {
         console.error("Error fetching data:", error);
-        return null; // Return null in case of an error
+        return null;
     }
 };
 
-// Define a function to create Highcharts chart
-const createChart = (data, selectedProvince = null, curveType = null,covidElement,serieColor) => {
+// Create a single Highcharts chart with 3 curves
+const createCombinedChart = (data, selectedProvince = null) => {
     try {
-        let titleText = `COVID-19 Historical Data for ${data.country}`;
-
+        let titleText = `COVID-19 Historical Data – ${data.country}`;
         if (selectedProvince) {
-            titleText += ` - ${selectedProvince}`;
+            titleText += ` (${selectedProvince})`;
         }
 
-        let textCurveType = `${curveType}`
+        const dates = Object.keys(data.timeline.cases);
+        const cases = Object.values(data.timeline.cases);
+        const deaths = Object.values(data.timeline.deaths || {});
+        const recovered = Object.values(data.timeline.recovered || {});
 
-        Highcharts.chart(covidElement, {
-            tooltip: {
-                backgroundColor: '#FCFFC5',
-                borderColor: 'black',
-                borderRadius: 5,
-                borderWidth: 10
-            },
-            plotOptions: {
-                series: {
-                    color: serieColor
+        Highcharts.chart(covidChartElement, {
+            chart: {
+                // This controls the main SVG background (the big rect behind everything)
+                backgroundColor: '#020617',          // dark
+
+                // This is the plot area (inside the axes)
+                plotBackgroundColor: '#020617',
+                plotBorderWidth: 0,
+                plotShadow: false,
+
+                zoomType: 'x',
+                style: {
+                    fontFamily:
+                    'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
                 }
             },
             title: {
                 text: titleText,
+                style: {
+                    color: '#e5e7eb'
+                }
+            },
+            subtitle: {
+                text: 'Drag to zoom – click legend to hide/show series',
+                style: {
+                    color: '#9ca3af'
+                }
             },
             xAxis: {
-                categories: Object.keys(data.timeline[curveType]),
+                categories: dates,
+                crosshair: true,
+                lineColor: '#4b5563',
+                tickColor: '#4b5563',
+                labels: {
+                    style: {
+                        color: '#9ca3af'
+                    }
+                }
             },
             yAxis: {
                 title: {
-                    text: textCurveType
+                    text: 'Number of people',
+                    style: {
+                        color: '#9ca3af'
+                    }
                 },
+                labels: {
+                    style: {
+                        color: '#9ca3af'
+                    }
+                },
+                gridLineColor: '#1f2937'
             },
-            series: [
-                {
-                    name: textCurveType,
-                    data: Object.values(data.timeline[curveType]),
+            legend: {
+                itemStyle: {
+                    color: '#e5e7eb'
                 },
-            ],
+                itemHoverStyle: {
+                    color: '#38bdf8'
+                }
+            },
+            tooltip: {
+                shared: true,
+                crosshairs: true,
+                backgroundColor: '#020617',
+                borderColor: '#38bdf8',
+                style: {
+                    color: '#e5e7eb'
+                }
+            },
+            plotOptions: {
+                series: {
+                    marker: {
+                        enabled: false
+                    },
+                    states: {
+                        hover: {
+                            halo: {
+                                size: 10,
+                                attributes: {
+                                    fill: "#38bdf8",
+                                    opacity: 0.25
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            series: [{
+                    name: "Cases",
+                    data: cases
+                },
+                {
+                    name: "Deaths",
+                    data: deaths
+                },
+                {
+                    name: "Recovered",
+                    data: recovered
+                }
+            ]
         });
     } catch (error) {
         console.error("Error creating chart:", error);
     }
 };
 
-// Define a function to initialize the chart with default country on page load
-const initializeChart = async (countryName, selectedProvince = null, curveType, covidElement, serieColor) => {
+// Fetch data for selected country (+ optional province) and draw chart
+const initializeChart = async (countryName, selectedProvince = null) => {
     if (!countries) {
         console.error("Countries data is not available.");
         return;
     }
 
-    const selectedCountry = countries.find(country => country.country === countryName);
+    const selectedCountry = countries.find(
+        (country) => country.country === countryName
+    );
 
-    if (selectedCountry) {
-        try {
-            // For example `https://disease.sh/v3/covid-19/historical/Australia/new south wales` where 
-            // apiCovidUrl = `https://disease.sh/v3/covid-19/historical/` and 
-            // selectedCountry.country = `Australia` and 
-            // queryParameters = `/new south wales`
-            let queryParameters = selectedProvince ? `/${selectedProvince}` : "";
-            const countryData = await getCovidApi(`${apiCovidUrl}${selectedCountry.country}`, queryParameters);
-
-            if (countryData && countryData.timeline) {
-                createChart(countryData, selectedProvince, curveType, covidElement,serieColor);
-            } else {
-                console.error("No valid data available for the selected country.");
-            }
-        } catch (error) {
-            console.error("Error fetching data for the selected country:", error);
-        }
-    } else {
+    if (!selectedCountry) {
         console.error("Selected country not found in the list.");
+        return;
+    }
+
+    try {
+        let queryParameters = selectedProvince ? `/${selectedProvince}` : "";
+        const countryData = await getCovidApi(
+            `${apiCovidUrl}${selectedCountry.country}`,
+            queryParameters
+        );
+
+        if (countryData && countryData.timeline) {
+            createCombinedChart(countryData, selectedProvince);
+        } else {
+            console.error("No valid data available for the selected country.");
+        }
+    } catch (error) {
+        console.error("Error fetching data for the selected country:", error);
     }
 };
-// Define a function to get province data and populate the dropdown
+
+// Get province data and populate the dropdown
 const getProvinceData = async (selectedCountry, selectedProvince = null) => {
     provincesElement.innerHTML = ""; // Clear previous options
 
-    // Fetch province data based on the selected country and province
+    // First option: "All provinces"
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.appendChild(document.createTextNode("All provinces"));
+    provincesElement.appendChild(defaultOption);
+
     let queryParameters = selectedProvince ? `/${selectedProvince}` : "";
-    const countryData = await getCovidApi(`${apiCovidUrl}${selectedCountry}`, queryParameters);
+    const countryData = await getCovidApi(
+        `${apiCovidUrl}${selectedCountry}`,
+        queryParameters
+    );
 
-    if (countryData && countryData.timeline) {
-        console.log("Province Data:", countryData); // Log the fetched data
-
-        // Populate the province dropdown
-        if (countryData.province) {
+    if (countryData) {
+        if (countryData.province && countryData.province.length > 0) {
             for (const province of countryData.province) {
                 const provinceElement = document.createElement("option");
                 provinceElement.value = province;
                 provinceElement.appendChild(document.createTextNode(province));
                 provincesElement.appendChild(provinceElement);
             }
-        }
 
-        // Trigger the "change" event to update the chart when provinces are populated
-        provincesElement.dispatchEvent(new Event("change"));
+            provincesElement.disabled = false;
+        } else {
+            // No provinces for this country
+            provincesElement.disabled = true;
+        }
     } else {
         console.error("No valid data available for the selected country.");
     }
-};
-// Function to remove duplicate countries from the dropdown
-const removeDuplicateCountries = () => {
-    const uniqueCountries = Array.from(new Set(countries.map(country => country.country)));
-  
-    // Clear the existing options in the select element
-    countriesElement.innerHTML = '';
-  
-    // Add the unique countries back to the select element
-    for (const country of uniqueCountries) {
-      const countryElement = document.createElement('option');
-      countryElement.value = country;
-      countryElement.appendChild(document.createTextNode(country));
-      countriesElement.appendChild(countryElement);
-    }
-  };
-// Implementing the "change" event listener for the country dropdown
-// Displaying the Covid19 data of the country the user has selected in the dropdown menu
-const handleCountryChange = async e => {
-    const selectedCountryName = e.target.value;
 
-    // Call the function to populate the province dropdown based on the selected country
+    // Trigger change to update the chart
+    provincesElement.dispatchEvent(new Event("change"));
+};
+
+// Remove duplicate countries from dropdown
+const removeDuplicateCountries = () => {
+    const uniqueCountries = Array.from(
+        new Set(countries.map((country) => country.country))
+    );
+
+    countriesElement.innerHTML = "";
+
+    const placeholderOption = document.createElement("option");
+    placeholderOption.value = "";
+    placeholderOption.appendChild(document.createTextNode("Select a country…"));
+    countriesElement.appendChild(placeholderOption);
+
+    for (const country of uniqueCountries) {
+        const countryElement = document.createElement("option");
+        countryElement.value = country;
+        countryElement.appendChild(document.createTextNode(country));
+        countriesElement.appendChild(countryElement);
+    }
+};
+
+// Country change handler
+const handleCountryChange = async (e) => {
+    const selectedCountryName = e.target.value;
+    if (!selectedCountryName) {
+        return;
+    }
     await getProvinceData(selectedCountryName);
 };
 
-countriesElement.addEventListener('change', handleCountryChange);
-
-// Implementing the "change" event listener for the province dropdown
-// Update the chart based on the selected province within the country
+// Province change handler
 const handleProvinceChange = async () => {
     const selectedCountryName = countriesElement.value;
-    const selectedProvince = provincesElement.value;
-    initializeChart(selectedCountryName, selectedProvince, 'cases', covidCasesElement, '#0000FF');
-    initializeChart(selectedCountryName, selectedProvince, 'deaths', covidDeathsElement ,'#FF0000');
-    initializeChart(selectedCountryName, selectedProvince, 'recovered', covidRecoveredElement, '#008000');
+    if (!selectedCountryName) return;
+
+    const selectedProvince = provincesElement.value || null;
+    initializeChart(selectedCountryName, selectedProvince);
 };
 
-provincesElement.addEventListener('change', handleProvinceChange);
+// Event listeners
+countriesElement.addEventListener("change", handleCountryChange);
+provincesElement.addEventListener("change", handleProvinceChange);
 
-// Call getCountryData to initialize the dropdown and event listener
+// ---- Initial load ----
+
+// This endpoint must return the list of countries with historical data.
+// Adjust if your API requires query parameters (e.g. ?lastdays=all)
 countries = await getCovidApi(apiCovidUrl);
 console.log("Fetched countries:", countries);
 
-// Remove duplicate countries from the dropdown
 removeDuplicateCountries();
 
-console.log("Print countriesElement: ",countriesElement);
-
-// Set the default country
 const defaultCountry = "Afghanistan";
+countriesElement.value = defaultCountry;
 
-// Initialize the chart with the default country on page load
-initializeChart(defaultCountry, null, 'cases', covidCasesElement,'#0000FF');
-initializeChart(defaultCountry, null, 'deaths', covidDeathsElement, '#FF0000');
-initializeChart(defaultCountry, null, 'recovered', covidRecoveredElement, '#008000');
+// Populate provinces + draw default chart
+await getProvinceData(defaultCountry);
+await initializeChart(defaultCountry, null);

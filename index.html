@@ -1,29 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="da">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>COVID-19 BI Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <!-- Main container for the Highcharts chart -->
-    <main>
-        <div>
-            <select id="dropdown-countries"></select>
-            <select id="dropdown-provinces"></select>
-        </div>
-        
-        <div id="covid-cases"></div>
-        <div id="covid-deaths"></div>
-        <div id="covid-recovered"></div>
-    </main>
+    <div class="app">
+        <header class="app-header">
+            <div>
+                <h1>COVID-19 BI Dashboard</h1>
+                <p>View historical COVID-19 case, death, and recovery statistics by country and region.</p>
+            </div>
+        </header>
 
-    <!-- Include the Highcharts library -->
-    <script type="module" defer src="https://code.highcharts.com/highcharts.js"></script>
+        <main class="dashboard">
+            <section class="dashboard-controls">
+                <div class="control-group">
+                    <label for="dropdown-countries">Land</label>
+                    <select id="dropdown-countries">
+                        <option value="">Vælg et land…</option>
+                    </select>
+                </div>
 
-    <!-- Include your app.js script -->
-    <script type="module" defer src="app.js"></script>
+                <div class="control-group">
+                    <label for="dropdown-provinces">Region / stat</label>
+                    <select id="dropdown-provinces">
+                        <option value="">Alle regioner</option>
+                    </select>
+                </div>
+            </section>
+
+            <section class="dashboard-content">
+                <div id="covid-chart" class="chart-card"></div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>Author: <strong>Pau Go Si</strong> - <a href="mailto:paugosi@hotmail.com">paugosi@hotmail.com</a></p>
+            <p>API Provider: <a href="https://disease.sh/v3/covid-19/historical/" target="_blank">disease.sh</a></p>
+        </footer>
+
+    </div>
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script type="module" src="app.js"></script>
 </body>
 </html>
