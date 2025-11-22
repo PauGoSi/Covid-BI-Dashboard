@@ -1,8 +1,8 @@
 # Covid BI Dashboard
 
-Feel free to explore and interact with this COVID-19 Business Intelligence dashboard. It allows users to view historical data on confirmed cases, deaths, and recoveries across multiple countries and their respective provinces. 
+Feel free to explore and interact with this COVID-19 Business Intelligence visualization dashboard. The application allows users to view historical data on confirmed cases, deaths, and recoveries across multiple countries and their respective provinces. 
 
-This project utilizes the free public API provided by [https://disease.sh/](https://disease.sh/v3/covid-19/historical/), and the dashboard is developed using vanilla JavaScript.
+This project uses the free public API provided by [https://disease.sh/](https://disease.sh/v3/covid-19/historical/), and the web application is built using JavaScript, HTML/CSS, and visualization libraries (such as Highcharts) to display time series data, cross-country comparisons, and interactive data exploration. 
 
 ## Features
 
